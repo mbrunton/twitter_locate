@@ -2,3 +2,6 @@
 data/
 weka/
 project2.pdf
+report_ideas.pages
+*.pyc
+*.swp

@@ -2,6 +2,59 @@
 
 import re
 
+tweet_filename = 'data/training_set_tweets.txt'
 
-line_re = re.compile(r'[0-9]+\t[0-9]+\t[^\t]+\t[0-9\-]{10} [0-9:]{8}')
+def get_repaired_tweets():
+    lines = open(tweet_filename, 'r').readlines()
+    lines = concat_split_lines(lines)
+    lines = remove_tabs(lines)
+    lines = reduce(lines)
+    lines = remove_empty(lines)
+    return lines
+
+def concat_split_lines(lines):
+    r = re.compile(r'^[0-9]+\t[0-9]+\t')
+    prevline = ''
+    goodlines = []
+    for line in lines:
+        m = r.match(line)
+        justappended = False
+        if not m:
+            prevline = prevline.strip() + line
+        else:
+            if prevline != '':
+                goodlines.append(prevline)
+                justappended = True
+            prevline = line
+    if not justappended:
+        goodlines.append(prevline)
+    return goodlines
+
+def remove_tabs(lines):
+    goodlines = []
+    for line in lines:
+        fields = line.split('\t')
+        goodline = fields[0] + '\t' + fields[1] + '\t'
+        tweet = ' '.join(fields[2:-1])
+        goodline += tweet + '\t' + fields[-1]
+        goodlines.append(goodline.strip())
+    return goodlines
+
+def reduce(lines): 
+    goodlines = []
+    for line in lines:
+        fields = line.split('\t')
+        tweet = fields[2]
+        fields[2] = re.sub(r'[ \t\r\f\n]+', ' ', tweet)
+        fields[2] = ''.join(c.lower() for c in fields[2] if c.isalpha() or c.isspace())
+        goodlines.append('\t'.join(fields))
+    return goodlines
+
+def remove_empty(lines):
+    goodlines = []
+    for line in lines:
+        if line.split('\t')[2] != '':
+            goodlines.append(line)
+    return goodlines
+
 
