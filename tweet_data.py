@@ -10,12 +10,17 @@ dev_tweets_filename = 'data/dev_tweets.txt'
 training_csv_filename = 'data/train.csv'
 dev_csv_filename = 'data/dev.csv'
 
+locs = ['At', 'SF', 'C', 'NY', 'LA']
+
 class Tweet():
     def __init__(self, userid, tweetid, text, date):
         self.userid = userid
         self.tweetid = tweetid
         self.text = text
         self.date = date
+    def __repr__(self):
+        s = ''
+        return s
 
 def get_tweets_from_file(filename):
     tweetfd = open(tweets_filename, 'r')
@@ -98,6 +103,26 @@ def get_loc_ids(loc):
     d = get_labeled_id_to_loc_dict()
     return [id for id in d if d[id] == loc]
 
+def get_loc_to_tweets_dict():
+    d = {}
+    labeled_tweets = get_labeled_tweets()
+    for loc in locs:
+        d[loc] = get_loc_tweets(loc, labeled_tweets)
+    return d
+    
+def get_loc_tweets(loc, tweets):
+    ids = get_loc_ids(loc)
+    loc_tweets = get_tweet_subset(tweets, ids)
+    return loc_tweets
+
+def get_loc_words(loc, tweets):
+    loc_tweets = get_loc_tweets(loc, tweets)
+    all_loc_words = get_words_from_tweets(loc_tweets)
+    return all_loc_words
+
+# These functions generated data output files
+# I ran them once, then subsequently just read from the files
+# when I needed them
 
 
 
