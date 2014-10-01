@@ -5,6 +5,3 @@ project2.pdf
 report_ideas.pages
 *.pyc
 *.swp
-
-# allow
-!data/*mi_list.txt
