@@ -2,7 +2,7 @@
 
 import re
 
-tweet_filename = 'data/training_set_tweets.txt'
+tweet_filename = 'data/original_tweet_data.txt'
 
 def get_repaired_tweets():
     lines = open(tweet_filename, 'r').readlines()

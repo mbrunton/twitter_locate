@@ -4,16 +4,20 @@
 # attempt to recreate Jeremy's feature generation algorithm
 
 tweets_filename = 'data/repaired_tweets.txt'
-training_filename = 'data/train.csv'
-dev_filename = 'data/dev.csv'
+training_tweets_filename = 'data/training_tweets.txt'
+dev_tweets_filename = 'data/dev_tweets.txt'
+
+training_csv_filename = 'data/train.csv'
+dev_csv_filename = 'data/dev.csv'
 
 class Tweet():
-    def __init__(self, userid, tweetid, text):
+    def __init__(self, userid, tweetid, text, date):
         self.userid = userid
         self.tweetid = tweetid
         self.text = text
+        self.date = date
 
-def get_tweets():
+def get_tweets_from_file(filename):
     tweetfd = open(tweets_filename, 'r')
     tweets = []
     for line in tweetfd.readlines():
@@ -21,8 +25,18 @@ def get_tweets():
         userid = int(fields[0])
         tweetid = int(fields[1])
         text = fields[2]
-        tweets.append(Tweet(userid, tweetid, text))
+        date = fields[3].strip()
+        tweets.append(Tweet(userid, tweetid, text, date))
     return tweets
+
+def get_all_tweets():
+    return get_tweets_from_file(tweets_filename)
+
+def get_training_tweets():
+    return get_tweets_from_file(training_tweets_filename)
+
+def get_dev_tweets():
+    return get_tweets_from_file(dev_tweets_filename)
 
 def get_words_from_tweets(tweets):
     words = []
@@ -32,17 +46,20 @@ def get_words_from_tweets(tweets):
             words.append(w)
     return words
 
+# return the subset of tweets with an id in ids
 def get_tweet_subset(tweets, ids):
     id_to_tweet = get_id_to_tweet_dict(tweets)
-    subset = [id_to_tweet[id].text for id in ids]
+    subset = [id_to_tweet[id] for id in ids]
     return subset
 
+# turns list of tweets into dict: tweetid => Tweet
 def get_id_to_tweet_dict(tweets):
     d = {}
     for tweet in tweets:
         d[tweet.tweetid] = tweet
     return d
 
+# opens a training/dev file and returns a dict: tweetid => loc
 # assumes csv file
 def get_id_to_loc_dict(filename):
     d = {}
@@ -50,36 +67,16 @@ def get_id_to_loc_dict(filename):
     for line in fd.readlines():
         fields = line.split(',')
         tweetid = int(fields[0])
-        loc = fields[-1]
+        loc = fields[-1].strip()
         d[tweetid] = loc
     return d
 
+# dict: training_tweetid => loc
 def get_training_id_to_loc_dict():
-    return get_id_to_loc_dict(training_filename)
+    return get_id_to_loc_dict(training_csv_filename)
 
+# dict: dev_tweetid => loc
 def get_dev_id_to_loc_dict():
-    return get_id_to_loc_dict(dev_filename)
-
-def get_training_tweets():
-    tweets = get_tweets()
-    training_id_to_loc = get_training_id_to_loc_dict()
-    training_ids = training_id_to_loc.keys()
-    training_tweets = get_tweet_subset(tweets, training_ids)
-
-def get_dev_tweets():
-    tweets = get_tweets()
-    dev_id_to_loc = get_dev_id_to_loc_dict()
-    dev_ids = dev_id_to_loc.keys()
-    dev_tweets = get_tweet_subset(tweets, dev_ids)
-
-def get_training_id_to_tweet_dict():
-    training = get_training_tweets()
-    return get_id_to_tweet_dict(training)
-
-def get_dev_id_to_tweet_dict():
-    dev = get_dev_tweets()
-    return get_id_to_tweet_dict(dev)
-
-
+    return get_id_to_loc_dict(dev_csv_filename)
 
 
