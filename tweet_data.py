@@ -107,18 +107,20 @@ def get_loc_ids(loc):
     loc_tweets = get_loc_tweets(loc)
     return [t.tweetid for t in loc_tweets]
 
-def get_loc_to_tweets_dict():
+def get_loc_to_tweets_dict(num=None):
     d = {}
     for loc in locs:
         d[loc] = get_loc_tweets(loc)
+        if num:
+            d[loc] = d[loc][:num]
     return d
     
 def get_loc_tweets(loc):
     filename = 'data/' + loc + '_tweets.txt'
     return get_tweets_from_file(filename)
 
-def get_loc_words(loc, tweets):
-    loc_tweets = get_loc_tweets(loc, tweets)
+def get_loc_words(loc):
+    loc_tweets = get_loc_tweets(loc)
     all_loc_words = get_words_from_tweets(loc_tweets)
     return all_loc_words
 

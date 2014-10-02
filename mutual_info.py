@@ -3,18 +3,40 @@ import tweet_data
 import math
 
 supplied_mi_filename = 'data/supplied_mi_list.txt'
+LA_mi_filename = 'data/LA_mi_list_reduced.txt'
+NY_mi_filename = 'data/NY_mi_list_reduced.txt'
+At_mi_filename = 'data/At_mi_list_reduced.txt'
+C_mi_filename = 'data/C_mi_list_reduced.txt'
+SF_mi_filename = 'data/SF_mi_list_reduced.txt'
 
 locs = tweet_data.locs
 
-# TODO!!!!!! shorten mi_list.txt files to remove those with 0 mi
 def get_mi_list_dict():
     d = {}
     for loc in locs:
         d[loc] = get_mi_list(loc)
     return d
 
+def get_mi_restricted_word_list(mi_min):
+    d = get_mi_list_dict()
+    words = []
+    for loc in d:
+        mi_list = d[loc]
+        locwords = [w for (w, mi) in mi_list if mi >= mi_min]
+        words += locwords
+    return words
+
+def get_wordnum_restricted_word_list(word_count):
+    d = get_mi_list_dict()
+    words = []
+    for loc in d:
+        mi_list = d[loc]
+        locwords = [w for (w, mi) in mi_list][:word_count/len(d)]
+        words += locwords
+    return words
+
 def get_mi_list(loc):
-    filename = 'data/' + loc + '_mi_list.txt'
+    filename = get_mi_filename_from_loc(loc)
     fd = open(filename, 'r')
     mi_list = []
     for line in fd.readlines():
@@ -49,9 +71,15 @@ def generate_mutual_info_list(loc, all_words, words_fd, all_loc_words, loc_words
             p_w_loc = 0
             mi = 0
         else:
-            p_w_loc = float(loc_words_fd[w]) / num_words
+            if w not in loc_words_fd:
+                p_w_loc = 0
+            else:
+                p_w_loc = float(loc_words_fd[w]) / num_words
             # p(w)
-            p_w = float(words_fd[w]) / num_words
+            if w not in words_fd:
+                p_w = 0
+            else:
+                p_w = float(words_fd[w]) / num_words
             # p(loc)
             p_loc = float(num_loc_words) / num_words
             if p_w == 0 or p_loc == 0:
@@ -118,7 +146,20 @@ def get_word_pairs(words):
         pairs.append( (w1, w2) )
     return pairs
 
-
+def get_mi_filename_from_loc(loc):
+    if loc == 'LA':
+        filename = LA_mi_filename
+    elif loc == 'NY':
+        filename = NY_mi_filename
+    elif loc == 'At':
+        filename = At_mi_filename
+    elif loc == 'C':
+        filename = C_mi_filename
+    elif loc == 'SF':
+        filename = SF_mi_filename
+    else:
+        raise Exception('Invalid location name: ' + loc)
+    return filename
 
 
 
