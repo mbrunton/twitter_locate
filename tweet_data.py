@@ -20,6 +20,10 @@ class Tweet():
         self.date = date
     def __repr__(self):
         s = ''
+        s = str(self.userid) + '\t'
+        s += str(self.tweetid) + '\t'
+        s += self.text + '\t'
+        s += self.date
         return s
 
 def get_tweets_from_file(filename):
@@ -100,29 +104,49 @@ def get_labeled_id_to_loc_dict():
     return d
 
 def get_loc_ids(loc):
-    d = get_labeled_id_to_loc_dict()
-    return [id for id in d if d[id] == loc]
+    loc_tweets = get_loc_tweets(loc)
+    return [t.tweetid for t in loc_tweets]
 
 def get_loc_to_tweets_dict():
     d = {}
-    labeled_tweets = get_labeled_tweets()
     for loc in locs:
-        d[loc] = get_loc_tweets(loc, labeled_tweets)
+        d[loc] = get_loc_tweets(loc)
     return d
     
-def get_loc_tweets(loc, tweets):
-    ids = get_loc_ids(loc)
-    loc_tweets = get_tweet_subset(tweets, ids)
-    return loc_tweets
+def get_loc_tweets(loc):
+    filename = 'data/' + loc + '_tweets.txt'
+    return get_tweets_from_file(filename)
 
 def get_loc_words(loc, tweets):
     loc_tweets = get_loc_tweets(loc, tweets)
     all_loc_words = get_words_from_tweets(loc_tweets)
     return all_loc_words
 
+
+
 # These functions generated data output files
 # I ran them once, then subsequently just read from the files
 # when I needed them
 
+def generate_loc_ids(loc):
+    d = get_labeled_id_to_loc_dict()
+    return [id for id in d if d[id] == loc]
+
+def generate_loc_to_tweets_dict():
+    d = {}
+    labeled_tweets = get_labeled_tweets()
+    for loc in locs:
+        d[loc] = generate_loc_tweets(loc, labeled_tweets)
+    return d
+    
+def generate_loc_tweets(loc, tweets):
+    ids = get_loc_ids(loc)
+    loc_tweets = get_tweet_subset(tweets, ids)
+    return loc_tweets
+
+def generate_loc_words(loc, tweets):
+    loc_tweets = generate_loc_tweets(loc, tweets)
+    all_loc_words = get_words_from_tweets(loc_tweets)
+    return all_loc_words
 
 

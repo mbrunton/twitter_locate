@@ -6,6 +6,7 @@ supplied_mi_filename = 'data/supplied_mi_list.txt'
 
 locs = tweet_data.locs
 
+# TODO!!!!!! shorten mi_list.txt files to remove those with 0 mi
 def get_mi_list_dict():
     d = {}
     for loc in locs:
@@ -70,7 +71,7 @@ def generate_mutual_info_lists():
     mi_lists = []
     for loc in locs:
         # all words from tweets marked as in location 'loc'
-        all_loc_words = tweet_data.get_loc_words(loc, tweets)
+        all_loc_words = tweet_data.get_loc_words(loc)
         num_loc_words = len(all_loc_words)
         loc_words_fd = get_freq_dist(all_loc_words)
         mi_list = generate_mutual_info_list(loc, all_words, words_fd, all_loc_words, loc_words_fd)
@@ -99,7 +100,7 @@ def generate_mutual_info_pair_lists():
     mi_pair_lists = []
     for loc in locs:
         # all words from tweets marked as in location 'loc'
-        all_loc_words = tweet_data.get_loc_words(loc, tweets)
+        all_loc_words = tweet_data.get_loc_words(loc)
         all_loc_word_pairs = get_word_pairs(all_loc_words)
         num_loc_word_pairs = len(all_loc_word_pairs)
         loc_word_pairs_fd = get_freq_dist(all_loc_word_pairs)
