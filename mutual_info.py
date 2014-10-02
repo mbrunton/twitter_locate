@@ -17,22 +17,31 @@ def get_mi_list_dict():
         d[loc] = get_mi_list(loc)
     return d
 
+"""
 def get_mi_restricted_word_list(mi_min):
     d = get_mi_list_dict()
-    words = []
+    words = set()
     for loc in d:
         mi_list = d[loc]
         locwords = [w for (w, mi) in mi_list if mi >= mi_min]
-        words += locwords
+        for w in locwords:
+            words.add(w)
     return words
+"""
 
 def get_wordnum_restricted_word_list(word_count):
     d = get_mi_list_dict()
-    words = []
+    words = set()
     for loc in d:
         mi_list = d[loc]
-        locwords = [w for (w, mi) in mi_list][:word_count/len(d)]
-        words += locwords
+        locwords = [w for (w, mi) in mi_list]
+        locwordset = set()
+        for w in locwords:
+            locwordset.add(w)
+            if len(locwordset) >= word_count/len(d):
+                break
+        for w in locwordset:
+            words.add(w)
     return words
 
 def get_mi_list(loc):
