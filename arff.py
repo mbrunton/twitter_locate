@@ -1,6 +1,9 @@
 
 # generate input files for weka
 
+import feature
+import csv
+import utils
 
 def generate_arff_header(relation, numeric_attributes):
     s = '@RELATION ' + relation + '\n'
@@ -29,3 +32,24 @@ def generate_arff_body(instances):
             str_list[-1] = str_list[-1][:-1]
         str_list.append('\n')
     return ''.join(str_list)
+
+def create_arff(numtweets, numwords, distr_skewed):
+    loc_to_instances, words = feature.get_loc_to_instances_dict(numtweets, numwords, distr_skewed)
+    filename = 'data/instances/'
+    title = utils.get_title(numtweets, numwords, distr_skewed)
+    filename += title
+    filename += '.arff'
+    fd = open(filename, 'w')
+    head = generate_arff_header(title, words)
+    body = csv.get_csv_string(loc_to_instances)
+    fd.write(head + body)
+
+
+
+
+
+
+
+
+
+

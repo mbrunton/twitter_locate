@@ -1,7 +1,6 @@
 
 import mutual_info
 import tweet_data
-import csv
 
 class Instance():
     def __init__(self, tweetid, attr_list, label=None):
@@ -10,19 +9,23 @@ class Instance():
         self.label = label
 
 
-def create_instances_csv(numtweets, numwords):
+def get_loc_to_instances_dict(numtweets, numwords, distr_skewed):
+    loc_distr = tweet_data.get_loc_distribution('data/loc_to_tweets_contributed.txt')
+    for loc in loc_distr:
+        loc_distr[loc] = int(loc_distr[loc] * numwords)
+    if not distr_skewed:
+        for loc in loc_distr:
+            loc_distr[loc] = int(numwords / len(loc_distr))
+
     loc_to_tweets = tweet_data.get_loc_to_tweets_dict(numtweets)
-    words = mutual_info.get_wordnum_restricted_word_list(numwords)
-    loc_to_instances = get_loc_to_instances_dict(loc_to_tweets, words)
-    filename = 'data/instances/'
-    filename += str(numtweets*5) + 'twts_'
-    filename += str(numwords) + 'maxmi_instances.csv'
-    csv.create_csv(filename, loc_to_instances)
+    words = mutual_info.get_wordnum_restricted_word_list(loc_distr)
+    loc_to_instances = get_loc_to_instances_dict_helper(loc_to_tweets, words)
+    return (loc_to_instances, words)
 
 
 
 
-def get_loc_to_instances_dict(loc_to_tweets_dict, words):
+def get_loc_to_instances_dict_helper(loc_to_tweets_dict, words):
     d = {}
     for loc in loc_to_tweets_dict:
         d[loc] = get_word_freq_instances(loc_to_tweets_dict[loc], words)

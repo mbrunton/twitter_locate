@@ -29,19 +29,19 @@ def get_mi_restricted_word_list(mi_min):
     return words
 """
 
-def get_wordnum_restricted_word_list(word_count):
+def get_wordnum_restricted_word_list(loc_distr):
     d = get_mi_list_dict()
     words = set()
     for loc in d:
         mi_list = d[loc]
         locwords = [w for (w, mi) in mi_list]
-        locwordset = set()
+        words_added = 0
         for w in locwords:
-            locwordset.add(w)
-            if len(locwordset) >= word_count/len(d):
-                break
-        for w in locwordset:
-            words.add(w)
+            if w not in words:
+                words.add(w)
+                words_added += 1
+                if words_added >= loc_distr[loc]:
+                    break
     return words
 
 def get_mi_list(loc):

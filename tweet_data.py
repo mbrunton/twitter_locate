@@ -27,7 +27,7 @@ class Tweet():
         return s
 
 def get_tweets_from_file(filename):
-    tweetfd = open(tweets_filename, 'r')
+    tweetfd = open(filename, 'r')
     tweets = []
     for line in tweetfd.readlines():
         fields = line.split('\t')
@@ -107,14 +107,27 @@ def get_loc_ids(loc):
     loc_tweets = get_loc_tweets(loc)
     return [t.tweetid for t in loc_tweets]
 
-def get_loc_to_tweets_dict(num=None):
+def get_loc_distribution(filename):
+    fd = open(filename, 'r')
+    d = {}
+    for line in fd.readlines():
+        fields = line.split('\t')
+        loc = fields[0]
+        distr = float(fields[1])
+        d[loc] = distr
+    total = sum(d.values())
+    for loc in d:
+        d[loc] = d[loc] / total
+    return d
+
+def get_loc_to_tweets_dict(numtweets=None):
     d = {}
     for loc in locs:
         d[loc] = get_loc_tweets(loc)
-        if num:
-            d[loc] = d[loc][:num]
+        if numtweets:
+            d[loc] = d[loc][:numtweets/len(d)]
     return d
-    
+
 def get_loc_tweets(loc):
     filename = 'data/' + loc + '_tweets.txt'
     return get_tweets_from_file(filename)
