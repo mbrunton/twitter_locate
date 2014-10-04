@@ -48,6 +48,21 @@ def create_arff(numtweets, numwords, numpairs, distr_skewed):
     body = csv.get_csv_string(loc_to_instances)
     fd.write(head + body)
 
+def create_arff_using_attributes(numtweets, attributes):
+    words = [att for att in attributes if '_' not in att]
+    pairs = [tuple(att.split('_')) for att in attributes if '_' in att]
+    loc_to_instances = feature.get_loc_to_instances_from_attributes(numtweets, words, pairs)
+    filename = 'data/selected_attributes/' 
+    title = str(numtweets) + 'twts_' + 'custom_attributes_instances'
+    filename += title + '.arff'
+    fd = open(filename, 'w')
+    numeric_attributes = words[:]
+    for (w1, w2) in pairs:
+        numeric_attributes.append( w1 + '_' + w2 )
+    head = generate_arff_header(title, numeric_attributes)
+    body = csv.get_csv_string(loc_to_instances)
+    fd.write(head + body)
+
 
 
 

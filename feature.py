@@ -28,6 +28,12 @@ def get_loc_to_instances_dict(numtweets, numwords, numwordpairs, distr_skewed, i
     loc_to_instances = get_loc_to_instances_dict_helper(loc_to_tweets, words, wordpairs)
     return (loc_to_instances, words, wordpairs)
 
+def get_loc_to_instances_from_attributes(numtweets, words, pairs):
+    loc_to_tweets = tweet_data.get_loc_to_tweets_dict(numtweets)
+    loc_to_instances = get_loc_to_instances_dict_helper(loc_to_tweets, words, pairs)
+    return loc_to_instances
+
+
 
 
 def get_loc_to_instances_dict_helper(loc_to_tweets_dict, words, wordpairs):

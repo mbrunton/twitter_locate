@@ -2,6 +2,9 @@
 import tweet_data
 import math
 
+# TODO: remove from mi_lists and mi_pair_lists any words/pairs
+#       which appear in multiple lists!!
+
 supplied_mi_filename = 'data/supplied_mi_list.txt'
 LA_mi_filename = 'data/LA_mi_list_reduced.txt'
 NY_mi_filename = 'data/NY_mi_list_reduced.txt'
@@ -45,6 +48,8 @@ def get_wordnum_restricted_word_list(loc_distr):
     d = get_mi_list_dict()
     words = set()
     for loc in d:
+        if loc_distr[loc] == 0:
+            continue
         mi_list = d[loc]
         locwords = [w for (w, mi) in mi_list]
         words_added = 0
@@ -60,6 +65,8 @@ def get_word_pair_list(loc_distr):
     d = get_mi_pair_list_dict()
     pairs = set()
     for loc in d:
+        if loc_distr[loc] == 0:
+            continue
         mi_pair_list = d[loc]
         locpairs = [(w1, w2) for (w1, w2, mi) in mi_pair_list]
         pairs_added = 0
