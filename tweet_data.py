@@ -60,6 +60,20 @@ def get_words_from_tweets(tweets):
             words.append(w)
     return words
 
+def get_word_pairs_from_tweets(tweets):
+    words = get_words_from_tweets(tweets)
+    pairs = get_word_pairs(words)
+    return pairs
+
+def get_word_pairs(words):
+    pairs = []
+    for i in range(len(words) - 1):
+        w1 = words[i]
+        w2 = words[i+1]
+        pairs.append( (w1, w2) )
+    return pairs
+
+
 # return the subset of tweets with an id in ids
 def get_tweet_subset(tweets, ids):
     id_to_tweet = get_id_to_tweet_dict(tweets)

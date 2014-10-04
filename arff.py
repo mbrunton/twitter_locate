@@ -33,14 +33,18 @@ def generate_arff_body(instances):
         str_list.append('\n')
     return ''.join(str_list)
 
-def create_arff(numtweets, numwords, distr_skewed):
-    loc_to_instances, words = feature.get_loc_to_instances_dict(numtweets, numwords, distr_skewed)
+def create_arff(numtweets, numwords, numpairs, distr_skewed):
+    loc_to_instances, words, pairs = feature.get_loc_to_instances_dict(numtweets, numwords, 
+                                                                    numpairs, distr_skewed)
     filename = 'data/instances/'
-    title = utils.get_title(numtweets, numwords, distr_skewed)
+    title = utils.get_title(numtweets, numwords, numpairs, distr_skewed)
     filename += title
     filename += '.arff'
     fd = open(filename, 'w')
-    head = generate_arff_header(title, words)
+    numeric_attributes = words[:]
+    for (w1, w2) in pairs:
+        numeric_attributes.append( w1 + '_' + w2 )
+    head = generate_arff_header(title, numeric_attributes)
     body = csv.get_csv_string(loc_to_instances)
     fd.write(head + body)
 

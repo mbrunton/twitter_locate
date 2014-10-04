@@ -9,12 +9,24 @@ At_mi_filename = 'data/At_mi_list_reduced.txt'
 C_mi_filename = 'data/C_mi_list_reduced.txt'
 SF_mi_filename = 'data/SF_mi_list_reduced.txt'
 
+LA_mi_pair_filename = 'data/LA_mi_pair_list_reduced.txt'
+NY_mi_pair_filename = 'data/NY_mi_pair_list_reduced.txt'
+At_mi_pair_filename = 'data/At_mi_pair_list_reduced.txt'
+C_mi_pair_filename = 'data/C_mi_pair_list_reduced.txt'
+SF_mi_pair_filename = 'data/SF_mi_pair_list_reduced.txt'
+
 locs = tweet_data.locs
 
 def get_mi_list_dict():
     d = {}
     for loc in locs:
         d[loc] = get_mi_list(loc)
+    return d
+
+def get_mi_pair_list_dict():
+    d = {}
+    for loc in locs:
+        d[loc] = get_mi_pair_list(loc)
     return d
 
 """
@@ -42,7 +54,22 @@ def get_wordnum_restricted_word_list(loc_distr):
                 words_added += 1
                 if words_added >= loc_distr[loc]:
                     break
-    return words
+    return list(words)
+
+def get_word_pair_list(loc_distr):
+    d = get_mi_pair_list_dict()
+    pairs = set()
+    for loc in d:
+        mi_pair_list = d[loc]
+        locpairs = [(w1, w2) for (w1, w2, mi) in mi_pair_list]
+        pairs_added = 0
+        for p in locpairs:
+            if p not in pairs:
+                pairs.add(p)
+                pairs_added += 1
+                if pairs_added >= loc_distr[loc]:
+                    break
+    return list(pairs)
 
 def get_mi_list(loc):
     filename = get_mi_filename_from_loc(loc)
@@ -54,6 +81,18 @@ def get_mi_list(loc):
         mi = float(split_line[1])
         mi_list.append( (w, mi) )
     return mi_list
+
+def get_mi_pair_list(loc):
+    filename = get_mi_pair_filename_from_loc(loc)
+    fd = open(filename, 'r')
+    mi_pair_list = []
+    for line in fd.readlines():
+        split_line = line.split('\t')
+        w1 = split_line[0]
+        w2 = split_line[1]
+        mi = float(split_line[2])
+        mi_pair_list.append( (w1, w2, mi) )
+    return mi_pair_list
 
 def get_supplied_mi_list():
     fd = open(supplied_mi_filename, 'r')
@@ -69,7 +108,7 @@ def get_supplied_mi_list():
 
 # return sorted list of (word, mutual_info) for set of words
 # sorted in decreasing order by mutual_info
-def generate_mutual_info_list(loc, all_words, words_fd, all_loc_words, loc_words_fd):
+def generate_mutual_info_list(loc, all_words, words_fd, all_loc_words, loc_words_fd, scale=None):
     mi_list = []
     num_words = len(all_words)
     num_loc_words = len(all_loc_words)
@@ -94,7 +133,10 @@ def generate_mutual_info_list(loc, all_words, words_fd, all_loc_words, loc_words
             if p_w == 0 or p_loc == 0:
                 mi = 0
             else:
-                mi = p_w_loc * math.log(float(p_w_loc) / (p_w * p_loc), 2)
+                if scale:
+                    mi = scale * p_w_loc * math.log(float(p_w_loc) / (p_w * p_loc), 2)
+                else:
+                    mi = p_w_loc * math.log(float(p_w_loc) / (p_w * p_loc), 2)
         mi_list.append( (w, mi) )
     return list(reversed(sorted(mi_list, key=lambda t : t[1])))
 
@@ -130,30 +172,25 @@ def generate_mutual_info_pair_lists():
     tweets = tweet_data.get_labeled_tweets()
     # all_words has repeats. it's all words from all tweets in training+dev sets
     all_words = tweet_data.get_words_from_tweets(tweets)
-    all_word_pairs = get_word_pairs(all_words)
+    # DEBUGGING
+    #all_words = all_words[:100000]
+    all_word_pairs = tweet_data.get_word_pairs(all_words)
     num_word_pairs = len(all_word_pairs)
-    word_pairs_fd = get_freq_dist(all_words)
+    word_pairs_fd = get_freq_dist(all_word_pairs)
 
     mi_pair_lists = []
     for loc in locs:
         # all words from tweets marked as in location 'loc'
         all_loc_words = tweet_data.get_loc_words(loc)
-        all_loc_word_pairs = get_word_pairs(all_loc_words)
+        all_loc_word_pairs = tweet_data.get_word_pairs(all_loc_words)
         num_loc_word_pairs = len(all_loc_word_pairs)
         loc_word_pairs_fd = get_freq_dist(all_loc_word_pairs)
-
+        #scale = 1000*1000
+        scale = None
         mi_pair_list = generate_mutual_info_list(loc, all_word_pairs, word_pairs_fd, 
-                                                    all_loc_word_pairs, loc_word_pairs_fd)
-        mi_lists.append( (loc, mi_pair_list) )
+                                        all_loc_word_pairs, loc_word_pairs_fd, scale)
+        mi_pair_lists.append( (loc, mi_pair_list) )
     return mi_pair_lists
-
-def get_word_pairs(words):
-    pairs = []
-    for i in range(len(words) - 1):
-        w1 = words[i]
-        w2 = words[i+1]
-        pairs.append( (w1, w2) )
-    return pairs
 
 def get_mi_filename_from_loc(loc):
     if loc == 'LA':
@@ -169,6 +206,25 @@ def get_mi_filename_from_loc(loc):
     else:
         raise Exception('Invalid location name: ' + loc)
     return filename
+
+
+def get_mi_pair_filename_from_loc(loc):
+    if loc == 'LA':
+        filename = LA_mi_pair_filename
+    elif loc == 'NY':
+        filename = NY_mi_pair_filename
+    elif loc == 'At':
+        filename = At_mi_pair_filename
+    elif loc == 'C':
+        filename = C_mi_pair_filename
+    elif loc == 'SF':
+        filename = SF_mi_pair_filename
+    else:
+        raise Exception('Invalid location name: ' + loc)
+    return filename
+
+if __name__ == '__main__':
+    generate_mutual_info_pair_lists()
 
 
 
