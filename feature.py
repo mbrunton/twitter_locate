@@ -9,7 +9,7 @@ class Instance():
         self.label = label
 
 # TODO!!!! implement userid as attr
-def get_loc_to_instances_dict(numtweets, numwords, numwordpairs, distr_skewed, include_userid=False):
+def get_loc_to_instances_dict(numtweets, numwords, numwordpairs, distr_skewed, include_userid):
     loc_distr = tweet_data.get_loc_distribution('data/loc_to_tweets_contributed.txt')
     loc_word_distr = {}
     loc_pair_distr = {}
@@ -25,7 +25,7 @@ def get_loc_to_instances_dict(numtweets, numwords, numwordpairs, distr_skewed, i
     loc_to_tweets = tweet_data.get_loc_to_tweets_dict(numtweets)
     words = mutual_info.get_wordnum_restricted_word_list(loc_word_distr)
     wordpairs = mutual_info.get_word_pair_list(loc_pair_distr)
-    loc_to_instances = get_loc_to_instances_dict_helper(loc_to_tweets, words, wordpairs)
+    loc_to_instances = get_loc_to_instances_dict_helper(loc_to_tweets, words, wordpairs, include_userid)
     return (loc_to_instances, words, wordpairs)
 
 def get_loc_to_instances_from_attributes(numtweets, words, pairs):
@@ -36,10 +36,10 @@ def get_loc_to_instances_from_attributes(numtweets, words, pairs):
 
 
 
-def get_loc_to_instances_dict_helper(loc_to_tweets_dict, words, wordpairs):
+def get_loc_to_instances_dict_helper(loc_to_tweets_dict, words, wordpairs, include_userid):
     d = {}
     for loc in loc_to_tweets_dict:
-        d[loc] = get_freq_instances(loc_to_tweets_dict[loc], words, wordpairs)
+        d[loc] = get_freq_instances(loc_to_tweets_dict[loc], words, wordpairs, include_userid)
         for instance in d[loc]:
             instance.label = loc
     return d
@@ -47,7 +47,7 @@ def get_loc_to_instances_dict_helper(loc_to_tweets_dict, words, wordpairs):
 # create vector instances from tweets
 # returns python list of 
 # Instance(tweetid, attr_list=[word1_freq, word2_freq, ..., wordpair1_freq, wordpair2_freq, ...])
-def get_freq_instances(tweets, words, wordpairs):
+def get_freq_instances(tweets, words, wordpairs, include_userid):
     instances = []
     for tweet in tweets:
         tweet_word_dict = {}
@@ -63,6 +63,8 @@ def get_freq_instances(tweets, words, wordpairs):
             else:
                 tweet_pair_dict[pair] += 1
         attr_list = []
+        if include_userid:
+            attr_list.append(tweet.userid)
         for word in words:
             if word in tweet_word_dict:
                 attr_list.append(tweet_word_dict[word])
