@@ -1,5 +1,9 @@
-
+# Knowledge Technology Project 2
+# Mitchell Brunton
+# #537642
+#
 # create csv files for PyML
+# can use csv string in arff creation also
 
 import feature
 import utils

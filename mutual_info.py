@@ -1,9 +1,11 @@
+# Knowledge Technology Project 2
+# Mitchell Brunton
+# #537642
+#
+# generate/retrieve mutual info lists of words/pairs of words
 
 import tweet_data
 import math
-
-# TODO: remove from mi_lists and mi_pair_lists any words/pairs
-#       which appear in multiple lists!!
 
 supplied_mi_filename = 'data/supplied_mi_list.txt'
 LA_mi_filename = 'data/LA_mi_list_reduced.txt'
@@ -31,18 +33,6 @@ def get_mi_pair_list_dict():
     for loc in locs:
         d[loc] = get_mi_pair_list(loc)
     return d
-
-"""
-def get_mi_restricted_word_list(mi_min):
-    d = get_mi_list_dict()
-    words = set()
-    for loc in d:
-        mi_list = d[loc]
-        locwords = [w for (w, mi) in mi_list if mi >= mi_min]
-        for w in locwords:
-            words.add(w)
-    return words
-"""
 
 def get_wordnum_restricted_word_list(loc_distr):
     d = get_mi_list_dict()

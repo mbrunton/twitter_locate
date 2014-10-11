@@ -1,3 +1,8 @@
+# Knowledge Technology Project 2
+# Mitchell Brunton
+# #537642
+#
+# generate instances from tweets, for use in ML packages
 
 import mutual_info
 import tweet_data

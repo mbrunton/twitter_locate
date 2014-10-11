@@ -1,7 +1,8 @@
 # Knowledge Technology Project 2
-# Feature Engineering for tweets
-
-# attempt to recreate Jeremy's feature generation algorithm
+# Mitchell Brunton
+# #537642
+#
+# getting/manipulating tweet data
 
 tweets_filename = 'data/repaired_tweets.txt'
 training_tweets_filename = 'data/training_tweets.txt'
@@ -150,7 +151,6 @@ def get_loc_words(loc):
     loc_tweets = get_loc_tweets(loc)
     all_loc_words = get_words_from_tweets(loc_tweets)
     return all_loc_words
-
 
 
 # These functions generated data output files

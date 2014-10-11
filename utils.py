@@ -1,5 +1,10 @@
+# Knowledge Technology Project 2
+# Mitchell Brunton
+# #537642
+#
+# helper functions
 
-
+# for filenames
 def get_title(numtweets, numwords, numpairs, distr_skewed, include_userid):
     title = str(numtweets) + 'twts_'
     title += str(numwords)

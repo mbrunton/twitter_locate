@@ -1,10 +1,15 @@
+# Knowledge Technologies Project 2
+# Mitchell Brunton
+# #537642
+#
 # Preprocess raw twitter data
 
 import re
 
 tweet_filename = 'data/original_tweet_data.txt'
 
-def get_repaired_tweets():
+# convert raw tweets into nice tweets (lowercase, alphabetic, collapse whitespace into spaces)
+def generate_repaired_tweets():
     lines = open(tweet_filename, 'r').readlines()
     lines = concat_split_lines(lines)
     lines = remove_tabs(lines)
@@ -45,8 +50,9 @@ def reduce(lines):
     for line in lines:
         fields = line.split('\t')
         tweet = fields[2]
-        fields[2] = re.sub(r'[ \t\r\f\n]+', ' ', tweet)
-        fields[2] = ''.join(c.lower() for c in fields[2] if c.isalpha() or c.isspace())
+        tweet = ''.join(c.lower() for c in tweet if c.isalpha() or c.isspace())
+        tweet = re.sub(r'[ \t\r\f\n]+', ' ', tweet)
+        fields[2] = tweet
         goodlines.append('\t'.join(fields))
     return goodlines
 

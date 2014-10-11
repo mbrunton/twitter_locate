@@ -1,4 +1,7 @@
-
+# Knowledge Technology Project 2
+# Mitchell Brunton
+# #537642
+#
 # generate input files for weka
 
 import tweet_data
