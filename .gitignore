@@ -3,5 +3,6 @@ data/*
 weka/
 project2.pdf
 report_ideas.pages
+report.pages
 *.pyc
 *.swp

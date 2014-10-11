@@ -8,7 +8,25 @@ class Instance():
         self.attr_list = attr_list
         self.label = label
 
-# TODO!!!! implement userid as attr
+def get_test_instances(test_tweets, numtweets, numwords, numwordpairs, distr_skewed, include_userid):
+    loc_distr = tweet_data.get_loc_distribution('data/loc_to_tweets_contributed.txt')
+    loc_word_distr = {}
+    loc_pair_distr = {}
+    for loc in loc_distr:
+        loc_word_distr[loc] = int(loc_distr[loc] * numwords)
+        loc_pair_distr[loc] = int(loc_distr[loc] * numwordpairs)
+
+    if not distr_skewed:
+        for loc in loc_distr:
+            loc_word_distr[loc] = int(numwords / len(loc_distr))
+            loc_pair_distr[loc] = int(numwordpairs / len(loc_distr))
+
+    loc_to_tweets = tweet_data.get_loc_to_tweets_dict(numtweets)
+    words = mutual_info.get_wordnum_restricted_word_list(loc_word_distr)
+    wordpairs = mutual_info.get_word_pair_list(loc_pair_distr)
+    instances = get_freq_instances(test_tweets, words, wordpairs, include_userid)
+    return (instances, words, wordpairs)
+
 def get_loc_to_instances_dict(numtweets, numwords, numwordpairs, distr_skewed, include_userid):
     loc_distr = tweet_data.get_loc_distribution('data/loc_to_tweets_contributed.txt')
     loc_word_distr = {}

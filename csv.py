@@ -23,5 +23,7 @@ def get_csv_string(loc_to_instances):
                 str_list.append(str(att) + ',')
             if instance.label:
                 str_list.append(str(instance.label) + '\n')
+            else:
+                str_list.append('?\n')
     return ''.join(str_list)
 
